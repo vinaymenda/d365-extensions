@@ -1,0 +1,44 @@
+﻿@model DynamicsExtensions.Models.View.InQueryModel
+
+@{
+    ViewBag.FormEncoding = "multipart/form-data";
+}
+
+<div class="row">
+    @Html.LabelFor(m => m.EntityName, new { @class="control-label"})
+    @Html.DropDownListFor(m => m.EntityName, Model.Entities, "Select Entity", new { @class ="form-control"})
+</div>
+<div class="row">
+    @Html.LabelFor(m => m.AttributeName, new { @class = "control-label" })
+    @Html.DropDownListFor(m => m.AttributeName, new List<SelectListItem>(), new { @class = "form-control" })
+</div>
+<div class="row">
+    @Html.LabelFor(m => m.InputFile, new { @class = "control-label" }) <small>Upload text file with values(one value per line)</small>
+    @Html.TextBoxFor(m => m.InputFile, new { @type = "file", @class = "form-control" })
+</div>
+
+<br />
+<input type="submit" class="btn-primary" />
+
+<script type="text/javascript">    
+
+    $(function () {
+        $('#EntityName').change(function () {
+            $('#AttributeName').html('');
+
+            $.ajax({
+                url: '@Url.Action("GetAttributes")?entity=' + $(this).val()
+            })
+                .done(function (result) {
+                    $.each(result, function (index, attribute) {
+                        $('#AttributeName')
+                            .append($("<option></option>")
+                                .attr("value", attribute.LogicalName)
+                                .text(attribute.DisplayName)); 
+                    });
+                });    
+        });
+
+    });
+
+</script>
